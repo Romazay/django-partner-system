@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Адміністративна панель{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-cog"></i> Адміністративна панель</h2>
+            <span class="badge bg-info">{{ partners.count }} партнерів</span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-users"></i> Список партнерів</h5>
+            </div>
+            <div class="card-body">
+                {% if partners %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Компанія</th>
+                                <th>Користувач</th>
+                                <th>Email</th>
+                                <th>Телефон</th>
+                                <th>Статус</th>
+                                <th>Промокоди</th>
+                                <th>Дії</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for partner in partners %}
+                            <tr>
+                                <td>
+                                    <strong>{{ partner.company_name }}</strong>
+                                </td>
+                                <td>{{ partner.user.username }}</td>
+                                <td>{{ partner.user.email }}</td>
+                                <td>{{ partner.phone|default:"—" }}</td>
+                                <td>
+                                    {% if partner.is_approved %}
+                                    <span class="badge bg-success">Схвалено</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Очікує</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ partner.promo_codes.count }}</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        {% if not partner.is_approved %}
+                                        <a href="{% url 'approve_partner' partner.id %}" class="btn btn-success btn-sm"
+                                            onclick="return confirm('Схвалити партнера {{ partner.company_name }}?')">
+                                            <i class="fas fa-check"></i> Схвалити
+                                        </a>
+                                        {% endif %}
+                                        <a href="{% url 'create_promo_code' partner.id %}"
+                                            class="btn btn-primary btn-sm">
+                                            <i class="fas fa-plus"></i> Промокод
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% if partner.promo_codes.exists %}
+                            <tr class="table-light">
+                                <td colspan="7">
+                                    <div class="ms-3">
+                                        <strong>Промокоди:</strong>
+                                        {% for code in partner.promo_codes.all %}
+                                        <span class="badge bg-secondary me-2 promo-code-badge"
+                                            data-code-id="{{ code.id }}">
+                                            {{ code.code }} ({{ code.discount_percent }}%)
+                                            {% if code.is_active %}
+                                            <button class="btn btn-sm btn-outline-danger ms-1 toggle-code"
+                                                data-code-id="{{ code.id }}" title="Деактивувати">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                            {% else %}
+                                            <button class="btn btn-sm btn-outline-success ms-1 toggle-code"
+                                                data-code-id="{{ code.id }}" title="Активувати">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            {% endif %}
+                                            <form method="post" action="{% url 'delete_promo_code' code.id %}"
+                                                style="display: inline;"
+                                                onsubmit="return confirm('Ви впевнені, що хочете видалити промокод {{ code.code }}?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger ms-1"
+                                                    title="Видалити">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </span>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h5>Партнерів поки що немає</h5>
+                    <p class="text-muted">Зареєстровані партнери з'являться тут</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Toggle promo code status
+        document.querySelectorAll('.toggle-code').forEach(button => {
+            button.addEventListener('click', function () {
+                const codeId = this.getAttribute('data-code-id');
+
+                fetch(`/toggle-promo-code/${codeId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    });
+</script>
+{% endblock %}

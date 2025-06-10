@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Створити промокод{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>
+                    <i class="fas fa-plus"></i>
+                    Створити промокод для {{ partner.company_name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Партнер</label>
+                        <input type="text" class="form-control" value="{{ partner.company_name }}" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.discount_percent.id_for_label }}" class="form-label">
+                            Відсоток знижки (%)
+                        </label>
+                        {{ form.discount_percent }}
+                        {% if form.discount_percent.errors %}
+                        <div class="text-danger">{{ form.discount_percent.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Введіть число від 1 до 100</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                Активний промокод
+                            </label>
+                        </div>
+                        {% if form.is_active.errors %}
+                        <div class="text-danger">{{ form.is_active.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Код промокоду буде згенеровано автоматично
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Створити промокод
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+</style>
+{% endblock %}

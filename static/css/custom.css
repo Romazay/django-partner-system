@@ -1,0 +1,23 @@
+.promo-code-badge {
+    transition: all 0.3s ease;
+}
+
+.promo-code-badge:hover {
+    transform: scale(1.05);
+}
+
+.toggle-code {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-stats {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+}

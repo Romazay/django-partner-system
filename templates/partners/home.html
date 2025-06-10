@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="text-center mb-5">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-handshake text-primary"></i>
+                Партнерська Система
+            </h1>
+            <p class="lead">Приєднуйтесь до нашої партнерської програми та отримуйте унікальні промокоди</p>
+        </div>
+
+        {% if not user.is_authenticated %}
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Реєстрація партнера</h5>
+                        <p class="card-text">Зареєструйтесь як партнер та отримайте доступ до промокодів</p>
+                        <a href="{% url 'register' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i> Реєстрація
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-sign-in-alt fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Вхід в систему</h5>
+                        <p class="card-text">Увійдіть в свій особистий кабінет партнера</p>
+                        <a href="{% url 'login' %}" class="btn btn-success">
+                            <i class="fas fa-arrow-right"></i> Увійти
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center">
+                <h4>Ласкаво просимо, {{ user.username }}!</h4>
+                <p>Перейдіть до свого кабінету для керування промокодами</p>
+                {% if user.is_staff %}
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">
+                    <i class="fas fa-cog"></i> Адмін панель
+                </a>
+                {% else %}
+                <a href="{% url 'partner_dashboard' %}" class="btn btn-primary">
+                    <i class="fas fa-tachometer-alt"></i> Мій кабінет
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
