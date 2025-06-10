@@ -25,8 +25,8 @@
 
 ```bash
 # Клонуйте репозиторій (після завантаження на GitHub)
-git clone https://github.com/your-username/partner-system.git
-cd partner-system
+git clone https://github.com/Romazay/django-partner-system.git
+cd django-partner-system
 
 # Створіть віртуальне середовище
 python -m venv venv
